@@ -1,58 +1,28 @@
-# GROUP[ID]_CENG313 — Forecasting Sticker Sales
+GROUP54_CENG313: Forecasting Sticker Sales
 
-| | |
-|---|---|
-| **Group ID** | [ID] |
-| **Member** | [Name Surname] — [Student ID] |
-| **Competition** | [Playground Series S5E1 – Forecasting Sticker Sales](https://www.kaggle.com/competitions/playground-series-s5e1) |
-| **Status** | Competition closed — evaluated with a Kaggle late submission |
+Group ID: 54
 
-## Problem
-Predict daily sticker sales (`num_sold`) for 2017–2019 from daily sales in 2010–2016, for 6 countries × 3 stores × 5 products (90 series). The metric is **MAPE** (mean absolute percentage error, lower is better).
+Member: Bekir Esen, 23118080701
 
-## Scores
-| Evaluation | MAPE |
-|---|---|
-| Validation, trained on 2010–2015, tested on 2016 | 6.94% |
-| Kaggle late submission, public | [PUBLIC] |
-| Kaggle late submission, private | [PRIVATE] |
+Competition: https://www.kaggle.com/competitions/playground-series-s5e1
 
-Screenshot: [`submissions/kaggle_score.png`](submissions/kaggle_score.png)
+This project is for the Kaggle Playground competition "Forecasting Sticker Sales". The goal is to predict how many stickers are sold each day in 6 countries, 3 stores and 5 products for 2017 to 2019, using daily sales from 2010 to 2016. Predictions are scored with MAPE (mean absolute percentage error), so lower is better. The competition is closed, so I evaluated my model with a late submission.
 
-## How to download the data
-1. Accept the rules on the [competition page](https://www.kaggle.com/competitions/playground-series-s5e1) (**Late Submission**).
-2. Open the **Data** tab and click **Download All**.
-3. Unzip into a `data/` folder at the repository root, so you have `data/train.csv` and `data/test.csv`.
+For Assignment 1 I explored the data and built a baseline. Country turned out to be the biggest factor by far (Kenya sells around 20 stickers a day, Norway around 1,400), followed by product and store, and weekends sell more than weekdays. The missing sales values are all in Canada and Kenya, mostly for the lowest-selling product, so I treated them as tiny unrecorded sales and dropped them. The baseline is a LightGBM model trained on calendar features and the category columns, using a log-transformed target so that its errors are relative like MAPE. I validated it by training on 2010 to 2015 and testing on 2016.
 
-The `data/` folder is excluded by `.gitignore` and is not committed.
+Results: on the 2016 validation year the model scores 6.94% MAPE, compared with 10.35% for a naive "last year's average" baseline. Without the log transform, the same model scores 11.50%, which is worse than the naive guess. The Kaggle late submission scores 12.55% public and 16.36% private. These are worse than validation because the test period is three years ahead, and tree models cannot extrapolate the yearly level shifts in the data. A screenshot of the score is in submissions/kaggle_score.png.
 
-## How to run
-```bash
-pip install -r requirements.txt
-jupyter notebook assignment1_eda_baseline.ipynb
-```
-Run all cells from the repository root (**Restart & Run All**). The notebook writes `submissions/submission.csv`, which is the file uploaded to Kaggle.
+To get the data, accept the competition rules on the Kaggle page (Late Submission), download everything from the Data tab, and unzip train.csv and test.csv into a folder called data in the repository root. The data folder is not committed.
 
-## Repository structure
-```
-├── README.md
-├── requirements.txt
-├── .gitignore
-├── assignment1_eda_baseline.ipynb   # Assignment 1: EDA & baseline
-├── src/
-│   ├── __init__.py
-│   ├── data.py      # load_data, preprocess
-│   ├── models.py    # naive_baseline, train_model, predict
-│   └── utils.py     # mape, save_submission
-├── data/            # not committed
-└── submissions/     # score screenshots
-```
+To run the project, create a virtual environment, install the packages and open the notebook from the repository root:
 
-## Approach (Assignment 1)
-- **EDA:** country is the strongest driver (Kenya ~20/day vs Norway ~1,423/day), then product and store; weekends sell more; missing targets are tiny unrecorded sales in Canada and Kenya.
-- **Preprocessing:** drop missing targets, split the date into calendar features, mark country/store/product as categories.
-- **Baseline:** LightGBM on `log1p(num_sold)` with a time-based validation split, compared against a naive "last year's average" baseline.
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    jupyter notebook assignment1_eda_baseline.ipynb
 
-## Next steps (Assignment 2)
-- GDP per capita per country and year, to capture year-level shifts the current model cannot extrapolate.
-- Holiday features for the recurring sales spikes.
+Then run all cells. The notebook writes submissions/submission.csv, which is the file I uploaded to Kaggle. The reusable code is in the src folder: data.py loads and prepares the data, models.py has the baselines and the LightGBM model, and utils.py has the MAPE metric and the submission writer.
+
+For Assignment 2 I plan to add GDP per capita for each country and year, which should explain the yearly level shifts, and holiday features for the recurring sales spikes.
+
+This project was developed with generative AI assistance for the code and the write-up. The decisions, runs and results are my own, and I can explain every cell.
