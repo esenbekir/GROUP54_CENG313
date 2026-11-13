@@ -1,0 +1,10 @@
+# Competition data (Kaggle rules + file size)
+data/
+
+# Generated predictions (the score screenshot is what gets committed)
+submissions/*.csv
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.venv/
